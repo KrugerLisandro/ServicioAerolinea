@@ -15,23 +15,21 @@ public class Vuelo {
 	//ATRIBUTOS
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long nro;
-	
-	//@NonNull: ESTA ANOTACIÓN SE UTILIZA PARA DOCUMENTAR QUE UN CAMPO O PARÁMETRO NO PUEDE SER NULO. ANOTACIÓN DE JetBrains
-	@Nonnull
+	private Long nro;
+	@Nonnull // ESTA ANOTACIÓN SE UTILIZA PARA DOCUMENTAR QUE UN CAMPO O PARÁMETRO NO PUEDE SER NULO. ANOTACIÓN DE JetBrains
 	LocalDateTime fecha_hora;
-	@Nonnull
+	private @Nonnull
 	Integer nro_filas;
 	@Nonnull
-	Integer nro_asiento; //NRO DE ASIENTOS POR FILA
+	private Integer nro_asiento; //NRO DE ASIENTOS POR FILA
 	@Nonnull
-	String tipo;
+	private String tipo;
 	@Nonnull
-	String destino;
+	private String destino;
 	@Nonnull
-	String origen;
+	private String origen;
 	@Nonnull
-	String estado;
+	private String estado;
 	
 	//GET Y SET
 	public Long getNro() {
@@ -73,16 +71,14 @@ public class Vuelo {
 	
 	/*POR EL MOMNETO SERÁ SIEMPRE AEROPUERTO SAUCE VIEJO YA QUE SOLO CONSIDERAREMOS LA VENTA DE
 	PASAJES QUE PARTAN DESDE ESTE LUGAR*/
-	public String getOrigen() {
-		return "aeropuerto sauce viejo";
-	}
-	
-	/*public void setOrigen(String origen) {
-		this.origen = origen;
-	}*/
-	
 	public String getEstado() {
 		return estado;
+	}
+	public String getOrigen() {
+		return origen;
+	}
+	public void setOrigen(String origen) {
+		this.origen = origen;
 	}
 	public void setEstado(String estado) {
 		this.estado = estado;

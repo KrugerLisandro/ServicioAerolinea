@@ -14,12 +14,16 @@
 4) Repository: Esta capa se encarga de interactuar con la base de datos. Se definen interfaces que extienden de JpaRepository, que proporciona los métodos necesarios para interactuar con la base de datos. Cada clase usa el sufijo "DAO".
 
 
-5) Request: Esta carpeta contiene las clases que se utilizan para recibir las peticiones HTTP en el controlador. La idea es que cada petición tenga su propia clase, con los campos necesarios para procesar la petición. Cada clase usa el sufijo "DTO".
-
-6) Service: Esta capa se encarga de la lógica de negocio de la aplicación. Aquí se definen las operaciones que se pueden realizar en la aplicación, y se implementan utilizando los repositorios y las entidades. 
+5) Request: Se utiliza para manejar las peticiones HTTP realizadas por el cliente al servidor  
 
 
-7) ServiceImpl: En esta carpeta se implementan las interfaces definidas en la capa de servicio. Es importante separar la definición de la implementación para poder hacer pruebas unitarias de manera más sencilla. 
+6) Response: Se utiliza para manejar las respuestas HTTP enviadas por el servidor al cliente. Cada clase usa el sufijo "DTO".
+
+
+7) Service: Esta capa se encarga de la lógica de negocio de la aplicación. Aquí se definen las operaciones que se pueden realizar en la aplicación, y se implementan utilizando los repositorios y las entidades. 
+
+
+8) ServiceImpl: En esta carpeta se implementan las interfaces definidas en la capa de servicio. Es importante separar la definición de la implementación para poder hacer pruebas unitarias de manera más sencilla. 
 
 
 #SO 2 VUELO, RESPONSABLE KRUGER LISANDRO

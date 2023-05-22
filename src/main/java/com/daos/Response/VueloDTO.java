@@ -1,39 +1,39 @@
-package com.daos.Request;
+package com.daos.Response;
 
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import org.springframework.hateoas.RepresentationModel;
 
-public class VueloDTO {
+import com.daos.Entity.Vuelo;
+
+// OBJETO UTILIZADO PARA CONSTRUIR LA RESPUESTA DE LOS SERVICIOS
+public class VueloDTO extends RepresentationModel<VueloDTO>{
 	
-	//ATRIBUTOS
+	private Long nro;
+	private LocalDateTime fecha_hora;
+	private Integer nro_filas;
+	private Integer nro_asiento; //NRO DE ASIENTOS POR FILA
+	private String tipo;
+	private String destino;
+	private String origen;
+	private String estado;
 	
-	Long nro;
+	public VueloDTO() {
+		super();
+	}
 	
-	@NotNull //NO PERMITE QUE UN CAMPO SEA NULO,PERO SI PERMITE QUE ESTÉ VACÍO
-	@NotBlank //PARA VALIDAR QUE UNA CADENA NO ESTÉ VACÍA Y NO CONTENGA SOLO ESPACIOS EN BLANCO
-	LocalDateTime fecha_hora;
-	@NotNull
-	@NotBlank
-	Integer nro_filas;
-	@NotNull
-	@NotBlank
-	Integer nro_asiento; //NRO DE ASIENTOS POR FILA
-	@NotNull
-	@NotBlank
-	String tipo;
-	@NotNull
-	@NotBlank
-	String destino;
-	@NotNull
-	@NotBlank
-	String origen;
-	@NotNull
-	@NotBlank
-	String estado;
+	public VueloDTO(Vuelo vuelo) {
+		super();
+		this.nro = vuelo.getNro();
+		this.fecha_hora = vuelo.getFecha_hora();
+		this.nro_filas = vuelo.getNro_filas();
+		this.nro_asiento = vuelo.getNro_asiento();
+		this.tipo = vuelo.getTipo();
+		this.destino = vuelo.getDestino();
+		this.origen = vuelo.getOrigen();
+		this.estado = vuelo.getEstado();
+	}
 	
-	//GET Y SET
 	public Long getNro() {
 		return nro;
 	}

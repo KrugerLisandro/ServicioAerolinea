@@ -2,7 +2,10 @@ package com.daos.Request;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.daos.Entity.Vuelo;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -13,32 +16,25 @@ import jakarta.validation.constraints.NotNull;
 public class VueloRequest {
 	
 	//ATRIBUTOS
-	@NotNull //NO PERMITE QUE UN CAMPO SEA NULO,PERO SI PERMITE QUE ESTÉ VACÍO
-	@NotBlank //PARA VALIDAR QUE UNA CADENA NO ESTÉ VACÍA Y NO CONTENGA SOLO ESPACIOS EN BLANCO
-	Long nro;
-	@NotNull
-	@NotBlank
-	@FutureOrPresent
-	LocalDateTime fecha_hora;
-	@NotNull
-	@NotBlank
-	Integer nro_filas;
-	@NotNull
-	@NotBlank
-	Integer nro_asiento; //NRO DE ASIENTOS POR FILA
-	@NotNull
-	@NotBlank
-	String tipo;
-	@NotNull
-	@NotBlank
+	private Long nro;
+	@NotNull(message = "La fecha y hora no pueden ser nulas")
+	@FutureOrPresent(message = "La fecha y hora deben ser en el futuro o en el presente")
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
+	private LocalDateTime fecha_hora;
+	@NotNull(message = "El número de filas no puede ser nulo")
+	private Integer nro_filas;
+	@NotNull(message = "El número de asientos no puede ser nulo")
+	private Integer nro_asiento; //NRO DE ASIENTOS POR FILA
+	@NotNull(message = "El tipo no puede ser nulo")
+	@NotBlank(message = "El tipo no puede estar vacío o contener solo espacios en blanco")
+	private String tipo;
+	@NotNull(message = "El destino no puede ser nulo")
+	@NotBlank(message = "El destino no puede estar vacío o contener solo espacios en blanco")
 	String destino;
 	/*@NotNull
 	@NotBlank
-	String origen
-	POR EL MOMENTO SIEMPRE SERA AEROPUERTO SAUCE VIEJO*/;
-	@NotNull
-	@NotBlank
-	String estado;
+	String origen POR EL MOMENTO SIEMPRE SERA AEROPUERTO SAUCE VIEJO*/;
 	
 	//GET Y SET
 	public Long getNro() {
@@ -83,12 +79,6 @@ public class VueloRequest {
 	public void setOrigen(String origen) {
 		this.origen = origen;
 	}*/
-	public String getEstado() {
-		return estado;
-	}
-	public void setEstado(String estado) {
-		this.estado = estado;
-	}
 	
 	//ENTIDAD VUELO
 	public Vuelo toEntidad() {
@@ -101,7 +91,7 @@ public class VueloRequest {
 		newVuelo.setTipo(this.tipo);
 		newVuelo.setDestino(this.destino);
 		newVuelo.setOrigen("sauce_viejo");
-		newVuelo.setEstado(this.estado);
+		newVuelo.setEstado("registrado");
 		return newVuelo;
 	}
 	

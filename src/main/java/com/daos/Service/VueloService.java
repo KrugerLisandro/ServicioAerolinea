@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.daos.Entity.Vuelo;
+import com.daos.Exception.Excepcion;
 
 
 public interface VueloService {
@@ -11,18 +12,15 @@ public interface VueloService {
 	// OBTENER LA LISTA DE VUELOS
 	List<Vuelo> obtenerVuelos();
 	
-	// OBTENER LISTA DE VUELOS OPTIONAL
-	Optional<List<Vuelo>> ObtenerVuelosOptional();
-
-	// OBTENER UN VUELO A PARTIR DE SU ID
-	Vuelo obtenerVuelo(Long nro);
+	// OBTENER LA LISTA POR ESTADO
+	List<Vuelo> filtroEstado(String estado);
 	
 	// OBTENER UN VUELO OPTIONAL A PARTIR DE SU ID
 	Optional<Vuelo> obtenerVueloOptional(Long nro);
 
-	// DAR DE ALTA O ACTUALIZAR UN VUELO
-	Vuelo guardarVuelo(Vuelo vuelo);
-
-	// ELIMINAR UN VUELO.
-	void eliminarVuelo(Vuelo vuelo);
+	// DAR DE ALTA, ACTUALIZAR O ELIMINAR DE FORMA LOGICA UN VUELO
+	Vuelo guardarVuelo(Vuelo vuelo) throws Excepcion;
+	
+	// ACTUALIZAR O ELIMINAR UN VUELO.
+	Vuelo actualizarVuelo(Vuelo vuelo) throws Excepcion;
 }

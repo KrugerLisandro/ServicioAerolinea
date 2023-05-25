@@ -1,6 +1,5 @@
 package com.daos.Controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,9 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.daos.Controller.Errors.ErrorHandler;
 import com.daos.Entity.Vuelo;
+import com.daos.Exception.Excepcion;
 import com.daos.Request.VueloRequest;
 import com.daos.Response.VueloDTO;
 import com.daos.Service.VueloService;
@@ -30,95 +33,94 @@ import jakarta.validation.Valid;
 public class VueloController {
 	
 	@Autowired
-	VueloService vueloService;
+	private VueloService serviceVuelo;
 	
 	//GET
 	//OBTENER TODOS LOS VUELOS.
-	//¿ES NECESARIO AGREGAR EL VALUE EN ESTE CASO?
-	@GetMapping(value="/*", produces= {MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<List<VueloDTO>> obtenerVuelos() {
+	@GetMapping(value="/vuelos", produces= {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<List<Vuelo>> obtenerVuelos() {
 		
-		Optional <List<Vuelo>> vuelosList = vueloService.ObtenerVuelosOptional();
-		if(vuelosList.isPresent()) {
-			List<Vuelo> vuelos = vuelosList.get();
-			return new ResponseEntity<List<VueloDTO>>(buildListResponse(vuelos), HttpStatus.OK);
+		List<Vuelo> vuelosList = serviceVuelo.obtenerVuelos();
+		if(vuelosList != null && !vuelosList.isEmpty()) {
+			return new ResponseEntity<List<Vuelo>>(vuelosList, HttpStatus.OK);
  		}
 		
-		//¿QUE HACE EL METODO BUILD()?
+		//BUILD: SE UTILIZA PARA CONSTRUIR UNA RESPUESTA SIN CONTENIDO CON EL ESTADO NOT_FOUND.
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 	
-	private List<VueloDTO> buildListResponse(List<Vuelo> vuelos) {
+	@GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<List<Vuelo>> filtroEstado(@RequestParam(name = "estado") String estado) throws Excepcion {
 		
-		List<VueloDTO> vuelosDTO = new ArrayList<VueloDTO>();
-		for (Vuelo v : vuelos) {
-			vuelosDTO.add(new VueloDTO(v));
-		}
+		List<Vuelo> vuelosList = serviceVuelo.filtroEstado(estado);
+		if(vuelosList != null && !vuelosList.isEmpty()) {
+			return new ResponseEntity<List<Vuelo>>(vuelosList, HttpStatus.OK);
+ 		}
 		
-		return vuelosDTO;
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	//MODIFICAR VUELO POR VUELODTO
 	//OBTENER EMPLEADO
-	@GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+	@GetMapping(value = "/{nro}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<VueloDTO> obtenerVuelo(@PathVariable Long nro){
 		
-		Optional<Vuelo> vueloRta = vueloService.obtenerVueloOptional(nro);
+		Optional<Vuelo> vueloRta = serviceVuelo.obtenerVueloOptional(nro);
 		if(vueloRta.isPresent()) {
 			Vuelo vuelo = vueloRta.get(); 
-			return new ResponseEntity<VueloDTO>(buildResponse(vuelo), HttpStatus.OK);
+			return new ResponseEntity<VueloDTO>(new VueloDTO(vuelo), HttpStatus.OK);
 		}
 		
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		
 	}
-	
-	private VueloDTO buildResponse(Vuelo vuelo) {
-		
-		return new VueloDTO(vuelo);
-	}
 
 	// POST 
 	@PostMapping
-	public ResponseEntity<Object> guardarVuelo(@Valid @RequestBody VueloRequest vueloRequest, BindingResult result){
+	public ResponseEntity<Object> guardarVuelo(@Valid @RequestBody VueloRequest vueloRequest, BindingResult result) throws Exception{
 		
 		if(result.hasErrors()) {
-			//AGREGAR EXCEPTION
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorHandler.formatearErrors(result)); 
 		}
 		
-		Vuelo newVuelo = vueloRequest.toEntidad();
-		vueloService.guardarVuelo(newVuelo);
+		Vuelo newVuelo = serviceVuelo.guardarVuelo(vueloRequest.toEntidad());
 		
 		return new ResponseEntity<Object>(newVuelo, HttpStatus.CREATED);
 	}
 	
 	// PUT 
-	@PutMapping("/{dni}")
-	public ResponseEntity<Object> actualizarVuelo(@Valid @RequestBody VueloRequest vueloRequest, @PathVariable Long nro){
+	@PutMapping("/{nro}")
+	public ResponseEntity<Object> actualizarVuelo(@Valid @RequestBody VueloRequest vueloRequest, @PathVariable Long nro, BindingResult result) throws Exception{
 		
-		Optional<Vuelo> vueloRta = vueloService.obtenerVueloOptional(nro);
+		Optional<Vuelo> vueloRta = serviceVuelo.obtenerVueloOptional(nro);
 		if(!vueloRta.isPresent()){
 			return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NO SE PUDO ENCONTRAR EL VUELO QUE DESEA MODIFICAR.");
 		}
 		
-		Vuelo newVuelo = vueloRequest.toEntidad();
+		if(result.hasErrors()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorHandler.formatearErrors(result)); 
+		}
 		
-		vueloService.guardarVuelo(newVuelo);
+		vueloRta.get().setFecha_hora(vueloRequest.getFecha_hora());
+		vueloRta.get().setEstado("reprogramado");
+		
+		Vuelo newVuelo = serviceVuelo.actualizarVuelo(vueloRta.get());
 		
 		return new ResponseEntity<Object>(newVuelo, HttpStatus.OK);
 	}
 	
 	// DELETE
-	@DeleteMapping("/{dni}")
-	public ResponseEntity<Object> eliminarVuelo(@PathVariable Long nro){
+	@DeleteMapping("/{nro}")
+	public ResponseEntity<Object> eliminarVuelo(@PathVariable Long nro) throws Excepcion{
 		
-		Optional<Vuelo> vueloRta = vueloService.obtenerVueloOptional(nro);
+		Optional<Vuelo> vueloRta = serviceVuelo.obtenerVueloOptional(nro);
 		if(!vueloRta.isPresent()){
 			return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NO SE PUDO ENCONTRAR EL VUELO QUE DESEA ELIMINAR.");
 		}
 		
 		//MODIFICAR EL ESTADO DEL VUELO A CANCELADO.
-		
-		return null;
+		vueloRta.get().setEstado("cancelado");
+		Vuelo newVuelo = serviceVuelo.actualizarVuelo(vueloRta.get());
+		return new ResponseEntity<Object>(newVuelo, HttpStatus.OK);
 	}
 }

@@ -2,14 +2,18 @@ package com.daos.Response;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.daos.Entity.Vuelo;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 // OBJETO UTILIZADO PARA CONSTRUIR LA RESPUESTA DE LOS SERVICIOS
 public class VueloDTO extends RepresentationModel<VueloDTO>{
 	
 	private Long nro;
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
 	private LocalDateTime fecha_hora;
 	private Integer nro_filas;
 	private Integer nro_asiento; //NRO DE ASIENTOS POR FILA
@@ -61,9 +65,11 @@ public class VueloDTO extends RepresentationModel<VueloDTO>{
 	public String getTipo() {
 		return tipo;
 	}
+
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
+
 	public String getDestino() {
 		return destino;
 	}

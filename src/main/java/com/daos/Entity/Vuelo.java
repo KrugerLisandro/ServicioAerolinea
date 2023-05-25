@@ -2,6 +2,9 @@ package com.daos.Entity;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Entity;
@@ -17,6 +20,8 @@ public class Vuelo {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long nro;
 	@Nonnull // ESTA ANOTACIÓN SE UTILIZA PARA DOCUMENTAR QUE UN CAMPO O PARÁMETRO NO PUEDE SER NULO. ANOTACIÓN DE JetBrains
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
 	LocalDateTime fecha_hora;
 	private @Nonnull
 	Integer nro_filas;

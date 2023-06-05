@@ -25,6 +25,21 @@
 
 8) ServiceImpl: En esta carpeta se implementan las interfaces definidas en la capa de servicio. Es importante separar la definición de la implementación para poder hacer pruebas unitarias de manera más sencilla. 
 
+#SO 1 CLIENTES, RESPONSABLE ZARATE MARCELA
+
+Operaciones Requeridas GET / POST / PUT /DELETE (Servicio Entidad)
+
+Establece/Actualiza/Retorna los datos de cliente:
+Dni
+Nombre
+Apellido
+Domicilio
+e-mail
+Fecha de nacimiento
+Número pasaporte
+Fecha vencimiento pasaporte
+No se podrá actualizar el dni del cliente.
+No podrá haber dos clientes con el mismo dni
 
 #SO 2 VUELO, RESPONSABLE KRUGER LISANDRO
 

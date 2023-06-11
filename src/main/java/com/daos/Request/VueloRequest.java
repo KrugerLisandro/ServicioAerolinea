@@ -25,7 +25,7 @@ public class VueloRequest {
 	@NotNull(message = "El número de filas no puede ser nulo")
 	private Integer nro_filas;
 	@NotNull(message = "El número de asientos no puede ser nulo")
-	private Integer nro_asiento; //NRO DE ASIENTOS POR FILA
+	private Integer nro_asientos; //NRO DE ASIENTOS POR FILA
 	@NotNull(message = "El tipo no puede ser nulo")
 	@NotBlank(message = "El tipo no puede estar vacío o contener solo espacios en blanco")
 	private String tipo;
@@ -55,11 +55,11 @@ public class VueloRequest {
 	public void setNro_filas(Integer nro_filas) {
 		this.nro_filas = nro_filas;
 	}
-	public Integer getNro_asiento() {
-		return nro_asiento;
+	public Integer getNro_asientos() {
+		return nro_asientos;
 	}
-	public void setNro_asiento(Integer nro_asiento) {
-		this.nro_asiento = nro_asiento;
+	public void setNro_asientos(Integer nro_asientos) {
+		this.nro_asientos = nro_asientos;
 	}
 	public String getTipo() {
 		return tipo;
@@ -87,7 +87,7 @@ public class VueloRequest {
 		newVuelo.setNro(this.nro);
 		newVuelo.setFecha_hora(this.fecha_hora);
 		newVuelo.setNro_filas(this.nro_filas);
-		newVuelo.setNro_asiento(this.nro_asiento);
+		newVuelo.setNro_asiento(this.nro_asientos);
 		newVuelo.setTipo(this.tipo);
 		newVuelo.setDestino(this.destino);
 		newVuelo.setOrigen("sauce_viejo");

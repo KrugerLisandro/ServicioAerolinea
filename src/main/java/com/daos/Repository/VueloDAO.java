@@ -18,5 +18,7 @@ public interface VueloDAO extends JpaRepository<Vuelo, Long>{
 	@Query(value = "SELECT v FROM vuelo v WHERE v.estado = ?1", nativeQuery = true)
 	public List<Vuelo>findByEstado(String estado);
 	
+	@Query(value = "SELECT v.estado FROM vuelo v WHERE v.nro = ?1", nativeQuery = true)
+	public String findByVueloEstado(Long nro);
 	
 }

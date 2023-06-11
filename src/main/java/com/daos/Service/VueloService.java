@@ -15,12 +15,15 @@ public interface VueloService {
 	// OBTENER LA LISTA POR ESTADO
 	List<Vuelo> filtroEstado(String estado);
 	
+	//OBTENER EL ESTADO DE UN VUELO A PARTIR DE SU ID
+	String findByVueloEstado(Long nro);
+	
 	// OBTENER UN VUELO OPTIONAL A PARTIR DE SU ID
 	Optional<Vuelo> obtenerVueloOptional(Long nro);
 
 	// DAR DE ALTA, ACTUALIZAR O ELIMINAR DE FORMA LOGICA UN VUELO
-	Vuelo guardarVuelo(Vuelo vuelo) throws Excepcion;
+	Vuelo guardarVuelo(Vuelo vuelo);
 	
 	// ACTUALIZAR O ELIMINAR UN VUELO.
-	Vuelo actualizarVuelo(Vuelo vuelo) throws Excepcion;
+	Vuelo actualizarVuelo(Vuelo vuelo)throws Excepcion;
 }

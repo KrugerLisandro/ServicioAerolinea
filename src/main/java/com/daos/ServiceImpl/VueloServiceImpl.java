@@ -19,9 +19,6 @@ import jakarta.validation.Validator;
 public class VueloServiceImpl implements VueloService {
 	
 	@Autowired
-	private Validator validator;
-	
-	@Autowired
 	private VueloDAO vueloDao;
 	
 	// OBTENER LA LISTA DE VUELOS.
@@ -35,51 +32,30 @@ public class VueloServiceImpl implements VueloService {
 		return vueloDao.findByEstado(estado);
 	}
 	
+	//OBTENER EL ESTADO DE UN VUELO A PARTIR DE SU ID
+	public String findByVueloEstado(Long nro) {
+		
+		return vueloDao.findByVueloEstado(nro);
+	}
+	
 	// OBTENER UN VUELO OPTIONAL A PARTIR DE SU ID.
 	public Optional<Vuelo> obtenerVueloOptional(Long nro){
 		return vueloDao.findById(nro);
 	}
 
 	// DAR DE ALTA UN VUELO.
-	public Vuelo guardarVuelo(Vuelo vuelo) throws Excepcion {
-		
-		Set<ConstraintViolation<Vuelo>> constraintViolation = validator.validate(vuelo);
-		if(constraintViolation.size()>0)
-		{
-			String errors="";
-			for (ConstraintViolation<Vuelo> cv : constraintViolation) {
-				errors+= cv.getPropertyPath() + ": " + cv.getMessage() + "\n";
-			}
-			// BAB_REQUEST
-			throw new Excepcion(400, errors);
-		}
-		
-		// VALIDAR SI EXISTE UN NRO DE VUELO REGISTRADO.
-		if (existeNroVuelo(vuelo.getNro())) {
-			throw new Excepcion("YA EXISTE UN NRO DE VUELO REGISTRADO.");
-		}
+	public Vuelo guardarVuelo(Vuelo vuelo){
 		
 		return vueloDao.save(vuelo);
 	}
 	
 	// ACTUALIZAR O ELIMINAR UN VUELO.
 	public Vuelo actualizarVuelo(Vuelo vuelo) throws Excepcion{
-	
+		
+		if(findByVueloEstado(vuelo.getNro()).equals("cancelado")) {
+			throw new Excepcion("NO SE PUEDE ACTUALIZAR, PORQUE EL VUELO FUE CANCELADO.");
+		}
+		
 		return vueloDao.save(vuelo);
-	}
-	
-	/**
-	 * @return DEVUELVE TRUE SI YA EXISTE UN NRO DE VUELO.
-	 *         SINO RETORNA FALSE.
-	 */
-	private boolean existeNroVuelo(Long nro) {
-
-		boolean band = false;
-		Long dniEmpleado = vueloDao.findByNroVuelo(nro);
-
-		if (dniEmpleado != null)
-			band = true;
-
-		return band;
 	}
 }

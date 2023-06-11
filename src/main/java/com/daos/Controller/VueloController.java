@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.daos.Controller.Errors.ErrorHandler;
 import com.daos.Entity.Vuelo;
@@ -37,7 +36,7 @@ public class VueloController {
 	
 	//GET
 	//OBTENER TODOS LOS VUELOS.
-	@GetMapping(value="/vuelos", produces= {MediaType.APPLICATION_JSON_VALUE})
+	@GetMapping(value="/list", produces= {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<List<Vuelo>> obtenerVuelos() {
 		
 		List<Vuelo> vuelosList = serviceVuelo.obtenerVuelos();
@@ -74,13 +73,13 @@ public class VueloController {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		
 	}
-
+	
 	// POST 
 	@PostMapping
 	public ResponseEntity<Object> guardarVuelo(@Valid @RequestBody VueloRequest vueloRequest, BindingResult result) throws Exception{
 		
 		if(result.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorHandler.formatearErrors(result)); 
+			return new ResponseEntity<Object>(ErrorHandler.formatearErrors(result),HttpStatus.BAD_REQUEST); 
 		}
 		
 		Vuelo newVuelo = serviceVuelo.guardarVuelo(vueloRequest.toEntidad());
@@ -90,23 +89,24 @@ public class VueloController {
 	
 	// PUT 
 	@PutMapping("/{nro}")
-	public ResponseEntity<Object> actualizarVuelo(@Valid @RequestBody VueloRequest vueloRequest, @PathVariable Long nro, BindingResult result) throws Exception{
+	public ResponseEntity<Object> actualizarVuelo( @RequestBody VueloRequest vueloRequest, @PathVariable Long nro, BindingResult result) throws Exception{
 		
 		Optional<Vuelo> vueloRta = serviceVuelo.obtenerVueloOptional(nro);
 		if(!vueloRta.isPresent()){
-			return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NO SE PUDO ENCONTRAR EL VUELO QUE DESEA MODIFICAR.");
+			return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("NO SE PUDO ENCONTRAR EL VUELO QUE DESEA MODIFICAR.");
 		}
 		
-		if(result.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorHandler.formatearErrors(result)); 
+		if(vueloRequest.getFecha_hora().isAfter(vueloRta.get().getFecha_hora()) && vueloRequest.getFecha_hora() != null) {
+			vueloRta.get().setFecha_hora(vueloRequest.getFecha_hora());
+			vueloRta.get().setEstado("reprogramado");
+			
+			Vuelo newVuelo = serviceVuelo.actualizarVuelo(vueloRta.get());
+			
+			System.out.println("Se notifico del cambio a los clientes.");
+			return new ResponseEntity<Object>(newVuelo, HttpStatus.OK);
 		}
 		
-		vueloRta.get().setFecha_hora(vueloRequest.getFecha_hora());
-		vueloRta.get().setEstado("reprogramado");
-		
-		Vuelo newVuelo = serviceVuelo.actualizarVuelo(vueloRta.get());
-		
-		return new ResponseEntity<Object>(newVuelo, HttpStatus.OK);
+		return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fecha_hora: DEBE SER POSTERIOR A LA FECHA ACTUAL Y DEBE SER NO NULA.");
 	}
 	
 	// DELETE

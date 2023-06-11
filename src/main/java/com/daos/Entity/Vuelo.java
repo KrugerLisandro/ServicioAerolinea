@@ -11,6 +11,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Vuelo {
@@ -22,18 +25,29 @@ public class Vuelo {
 	@Nonnull // ESTA ANOTACIÓN SE UTILIZA PARA DOCUMENTAR QUE UN CAMPO O PARÁMETRO NO PUEDE SER NULO. ANOTACIÓN DE JetBrains
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
+	@NotNull
 	LocalDateTime fecha_hora;
-	private @Nonnull
-	Integer nro_filas;
 	@Nonnull
+	@NotNull
+	@Min(4)
+	@Max(13)
+	private Integer nro_filas;
+	@Nonnull
+	@NotNull
+	@Min(100)
+	@Max(146)
 	private Integer nro_asiento; //NRO DE ASIENTOS POR FILA
 	@Nonnull
+	@NotNull
 	private String tipo;
 	@Nonnull
+	@NotNull
 	private String destino;
 	@Nonnull
+	@NotNull
 	private String origen;
 	@Nonnull
+	@NotNull
 	private String estado;
 	
 	//GET Y SET

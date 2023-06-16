@@ -1,5 +1,6 @@
 package com.daos.Controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.daos.Controller.Errors.ErrorHandler;
 import com.daos.Entity.Cliente;
@@ -24,15 +26,15 @@ import com.daos.Exception.Excepcion;
 import com.daos.Request.ClienteRequest;
 import com.daos.Response.ClienteDTO;
 import com.daos.Service.ClienteService;
-
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/clientes")
-public class ClienteController {
+public class ClienteRestController {
 
 	@Autowired
 	private ClienteService serviceCliente;
+
 	@GetMapping(value = "/liscli", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<List<Cliente>> obtenerClientes() {
 		List<Cliente> clientesList = serviceCliente.obtenerClientes();
@@ -41,53 +43,59 @@ public class ClienteController {
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
-	@GetMapping(value = "/{dni}", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<ClienteDTO> obtenerCliente(@PathVariable Long dni) {
 
-		Optional<Cliente> clienteRta = Optional.empty();
+	@GetMapping(value = "/{dni}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<ClienteDTO> obtenerClientebyDNI(@PathVariable Long dni) {
+
+		Optional<Cliente> clienteRta = serviceCliente.obtenerClientebyDNI(dni);
 		if (clienteRta.isPresent()) {
 			Cliente cliente = clienteRta.get();
 			return new ResponseEntity<ClienteDTO>(new ClienteDTO(cliente), HttpStatus.OK);
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
+	
+	@DeleteMapping("/{dni}")
+	public ResponseEntity<Object> eliminarCliente(@PathVariable Long dni) throws Excepcion {
+
+		Optional<Cliente> clienteRta = serviceCliente.obtenerClientebyDNI(dni);
+		if (!clienteRta.isPresent())
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NO SE PUDO ENCONTRAR EL CLIENTE.");		
+		serviceCliente.elminarCliente(dni);
+		return ResponseEntity.ok().build();
+	}
+	
 	@PostMapping
-	public ResponseEntity<Object> guardarCliente(@Valid @RequestBody ClienteRequest clienteRequest,
+	public ResponseEntity<Object> insertarCliente (@Valid @RequestBody ClienteRequest clienteRequest,
 			BindingResult result) throws Exception {
 
 		if (result.hasErrors()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorHandler.formatearErrors(result));
 		}
+		
+		
+		Cliente newCliente = clienteRequest.toEntidad();
+		serviceCliente.insertarCliente(newCliente);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{dni}")
+				.buildAndExpand(newCliente.getDni()).toUri();
 
-		Cliente newCliente = serviceCliente.guardarCliente(clienteRequest.toEntidad());
-
-		return new ResponseEntity<Object>(newCliente, HttpStatus.CREATED);
+		return ResponseEntity.created(location).build();
 	}
-	@PutMapping("/{dni}")
-	public ResponseEntity<Object> actualizarCliente(@Valid @RequestBody ClienteRequest clienteRequest,
-			@PathVariable Long dni, BindingResult result) throws Exception {
 
-		Optional<Cliente> clienteRta = Optional.empty();
+	@PutMapping("/{dni}")
+	public ResponseEntity<Object> actualizarCliente(@RequestBody ClienteRequest clienteRequest, @PathVariable long dni) throws Exception {
+		Optional<Cliente> clienteRta = serviceCliente.obtenerClientebyDNI(dni);
 		if (!clienteRta.isPresent()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NO SE PUDO ENCONTRAR EL CLIENTE");
+		} else {
+			Cliente cliente = clienteRequest.toEntidad();
+			if (!cliente.getDni().equals(dni))
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se puede modificar el dni.");
+			serviceCliente.actualizarCliente(cliente);
+			return ResponseEntity.ok(cliente);
 		}
-		if (result.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorHandler.formatearErrors(result));
-		}
-		clienteRta.get().setApellido(clienteRequest.getApellido());
-		clienteRta.get().setNombre(clienteRequest.getNombre());
 
-		Cliente newCliente = serviceCliente.actualizarCliente(clienteRta.get());
-
-		return new ResponseEntity<Object>(newCliente, HttpStatus.OK);
 	}
-	@DeleteMapping("/{dni}")
-	public ResponseEntity<Object> eliminarCliente(@PathVariable Long dni) throws Excepcion {
 
-		Optional<Cliente> clienteRta = Optional.empty();
-		if (!clienteRta.isPresent()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NO SE PUDO ENCONTRAR EL CLIENTE.");
-		}
-		return null;
-	}
+	
 }

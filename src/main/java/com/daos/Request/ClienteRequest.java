@@ -10,12 +10,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
 
 public class ClienteRequest {
 	
-	@Id
+	@Nonnull
+	@Min(7000000)
 	private Long dni;
 	@Nonnull
 	@Size(min = 1,max = 100, message = "Debe completar el nombre")
@@ -31,9 +33,8 @@ public class ClienteRequest {
 	@Nonnull 
 	@Email(message = "El e-mail ingresado no es valido")
 	private String email;
-	@Nonnull
+	
 	private Long pasaporte;
-	@Nonnull
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate fecha_pas;

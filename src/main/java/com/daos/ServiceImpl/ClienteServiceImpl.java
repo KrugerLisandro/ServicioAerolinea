@@ -24,15 +24,17 @@ public class ClienteServiceImpl implements ClienteService {
 	@Autowired
 	private ClienteDAO ClienteDao;
 	
+	@Override
 	public List<Cliente> obtenerClientes() {
 		return ClienteDao.findAll();
 	}
-	
+	@Override
 	public Optional<Cliente> obtenerClientebyDNI(Long dni){
 		return ClienteDao.findById(dni);
 	}
-
-	public Cliente guardarCliente (Cliente cliente) throws Excepcion {
+	
+	@Override
+	public Cliente insertarCliente (Cliente cliente) throws Excepcion {
 		
 		Set<ConstraintViolation<Cliente>> constraintViolation = validator.validate(cliente);
 		if(constraintViolation.size()>0)
@@ -51,25 +53,21 @@ public class ClienteServiceImpl implements ClienteService {
 		return ClienteDao.save(cliente);
 	}
 	
-	public Cliente actualizarCliente (Cliente cliente) throws Excepcion{
-	
+	@Override
+	public Cliente actualizarCliente (Cliente cliente) throws Excepcion{	
 		return ClienteDao.save(cliente);
 	}
 	
 	private boolean existeCliente (Long dni) {
-
 		boolean band = false;
 		Long dniCliente = ClienteDao.findBydni(dni);
-
 		if (dniCliente != null)
 			band = true;
-
 		return band;
 	}
 
 	@Override
-	public Cliente elminarCliente(Cliente cliente) throws Excepcion {
-		// TODO Auto-generated method stub
-		return null;
+	public void elminarCliente (long dni) {
+		ClienteDao.deleteById(dni);
 	}
 }

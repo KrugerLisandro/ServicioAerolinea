@@ -8,14 +8,47 @@ import com.daos.Exception.Excepcion;
 
 
 public interface ClienteService {
+	
+	/**
+	 * Servicio para listar todos los clientes
+	 * @return
+	 */
 
-	List<Cliente> obtenerClientes();
+	public List<Cliente> obtenerClientes();
 	
-	Optional<Cliente> obtenerClientebyDNI(Long dni);
+	/**
+	 * Servicio para listar datos de un cliente
+	 * @param dni Un Cliente se identifica con el dni que sera unico
+	 * @return null o datos del cliente
+	 */
+	
+	public Optional<Cliente> obtenerClientebyDNI(Long dni);
+	
+	/**
+	 * Servicio para guardar un cliente
+	 * @param cliente
+	 * @return
+	 * @throws Excepcion
+	 */
 
-	Cliente guardarCliente (Cliente cliente) throws Excepcion;
+	public Cliente insertarCliente (Cliente cliente) throws Excepcion;
 	
-	Cliente actualizarCliente (Cliente cliente) throws Excepcion;
+	/**
+	 * Servicio para modificar los datos de un cliente
+	 * @param cliente
+	 * @return
+	 * @throws Excepcion
+	 */
 	
-	Cliente elminarCliente (Cliente cliente) throws Excepcion;
+	public Cliente actualizarCliente (Cliente cliente) throws Excepcion;
+	
+	/**
+	 * Servicio para eliminar un cliente
+	 * @param cliente
+	 * @return
+	 * @throws Excepcion
+	 */
+	
+	public void  elminarCliente (long dni) throws Excepcion;
+
 }

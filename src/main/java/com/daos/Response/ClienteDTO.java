@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.RepresentationModel;
-
 import com.daos.Entity.Cliente;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -102,6 +101,13 @@ public class ClienteDTO extends RepresentationModel<ClienteDTO>{
 	public void setFecha_pas(LocalDate fecha_pas) {
 		this.fecha_pas = fecha_pas;
 	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString();
+	}
+	
 	
 	
 }

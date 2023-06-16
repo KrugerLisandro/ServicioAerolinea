@@ -32,9 +32,9 @@ public class Cliente {
 	@Nonnull
 	@Email(message = "El e-mail ingresado no es valido")
 	private String email;
-	@Nonnull
+	
 	private Long pasaporte;
-	@Nonnull
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate fecha_pas;

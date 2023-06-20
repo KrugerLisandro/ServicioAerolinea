@@ -107,7 +107,6 @@ public class ClienteDTO extends RepresentationModel<ClienteDTO>{
 		// TODO Auto-generated method stub
 		return super.toString();
 	}
-	
-	
-	
-}
+
+	}
+

@@ -22,6 +22,10 @@ public class Excepcion extends Exception{
 		this.mensaje = mensaje;
 	}
 
+	public Excepcion(String message, int i) {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getStatusCode() {
 		return statusCode;
 	}

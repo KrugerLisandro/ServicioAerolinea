@@ -1,10 +1,11 @@
 package com.daos.Controller;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +19,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.daos.Controller.Errors.ErrorHandler;
 import com.daos.Entity.Cliente;
 import com.daos.Exception.Excepcion;
 import com.daos.Request.ClienteRequest;
 import com.daos.Response.ClienteDTO;
 import com.daos.Service.ClienteService;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -45,12 +45,12 @@ public class ClienteRestController {
 	}
 
 	@GetMapping(value = "/{dni}", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<ClienteDTO> obtenerClientebyDNI(@PathVariable Long dni) {
+	public ResponseEntity<ClienteDTO> obtenerClientebyDNI(@PathVariable Long dni) throws Excepcion {
 
 		Optional<Cliente> clienteRta = serviceCliente.obtenerClientebyDNI(dni);
 		if (clienteRta.isPresent()) {
-			Cliente cliente = clienteRta.get();
-			return new ResponseEntity<ClienteDTO>(new ClienteDTO(cliente), HttpStatus.OK);
+			Cliente cliente = clienteRta.get();		
+			return new ResponseEntity<ClienteDTO>(buildResponse(cliente), HttpStatus.OK);
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
@@ -71,15 +71,10 @@ public class ClienteRestController {
 
 		if (result.hasErrors()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorHandler.formatearErrors(result));
-		}
-		
-		
+		}			
 		Cliente newCliente = clienteRequest.toEntidad();
 		serviceCliente.insertarCliente(newCliente);
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{dni}")
-				.buildAndExpand(newCliente.getDni()).toUri();
-
-		return ResponseEntity.created(location).build();
+		return new ResponseEntity<Object>(buildResponse(newCliente), HttpStatus.OK);
 	}
 
 	@PutMapping("/{dni}")
@@ -92,10 +87,22 @@ public class ClienteRestController {
 			if (!cliente.getDni().equals(dni))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se puede modificar el dni.");
 			serviceCliente.actualizarCliente(cliente);
-			return ResponseEntity.ok(cliente);
+			return new ResponseEntity<Object>(buildResponse(cliente), HttpStatus.OK);
+
 		}
-
 	}
-
 	
+	private ClienteDTO buildResponse(Cliente pojo) throws Excepcion {
+		try {
+			ClienteDTO dto = new ClienteDTO(pojo);
+			 //Self link
+			Link selfLink = WebMvcLinkBuilder.linkTo(ClienteRestController.class)
+										.slash(pojo.getDni())                
+										.withSelfRel();
+			dto.add(selfLink);
+			return dto;
+		} catch (Exception e) {
+			throw new Excepcion(e.getMessage(),500);
+		}
+	}
 }

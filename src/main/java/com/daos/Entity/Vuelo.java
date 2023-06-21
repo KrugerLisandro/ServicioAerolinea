@@ -25,7 +25,6 @@ public class Vuelo {
 	@Nonnull // ESTA ANOTACIÓN SE UTILIZA PARA DOCUMENTAR QUE UN CAMPO O PARÁMETRO NO PUEDE SER NULO. ANOTACIÓN DE JetBrains
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
-	@NotNull
 	LocalDateTime fecha_hora;
 	@Nonnull
 	@NotNull

@@ -25,7 +25,7 @@ public interface ClienteService {
 	public Optional<Cliente> obtenerClientebyDNI(Long dni);
 	
 	/**
-	 * Servicio para guardar un cliente
+	 * Servicio para agregar un cliente
 	 * @param cliente
 	 * @return
 	 * @throws Excepcion

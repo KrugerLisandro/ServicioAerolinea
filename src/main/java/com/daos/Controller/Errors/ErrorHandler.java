@@ -21,8 +21,11 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class ErrorHandler {
 
-   public ResponseEntity<ErrorInfo> methodArgumentNotValidException(HttpServletRequest request, Excepcion e) {
-	   //var statusCode= e.getStatusCode(); WARNING
+   private int statusCode;
+
+
+public ResponseEntity<ErrorInfo> methodArgumentNotValidException(HttpServletRequest request, Excepcion e) {
+	   statusCode = e.getStatusCode();
 	   
        ErrorInfo errorInfo = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getRequestURI());
        return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);

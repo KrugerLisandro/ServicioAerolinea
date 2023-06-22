@@ -1,5 +1,6 @@
 package com.daos.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,16 +35,25 @@ public class ClienteRestController {
 
 	@Autowired
 	private ClienteService serviceCliente;
-
+	/**
+	 * Metodo Get que devuelve Listado de Clientes
+	 * @return
+	 * @throws Excepcion 
+	 */
 	@GetMapping(value = "/liscli", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<List<Cliente>> obtenerClientes() {
+	public ResponseEntity<List<ClienteDTO>> obtenerClientes() throws Excepcion {
 		List<Cliente> clientesList = serviceCliente.obtenerClientes();
 		if (clientesList != null && !clientesList.isEmpty()) {
-			return new ResponseEntity<List<Cliente>>(clientesList, HttpStatus.OK);
+			return new ResponseEntity<List<ClienteDTO>>(buildResponseList(clientesList), HttpStatus.OK);
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
-
+	/**
+	 * Metodo get que devuelve datos del dni enviado en el path
+	 * @param dni
+	 * @return
+	 * @throws Excepcion
+	 */
 	@GetMapping(value = "/{dni}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<ClienteDTO> obtenerClientebyDNI(@PathVariable Long dni) throws Excepcion {
 
@@ -55,6 +65,9 @@ public class ClienteRestController {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 	
+	/**
+	 * Metodo Delete que elimina el mail enviado en el path
+	 */
 	@DeleteMapping("/{dni}")
 	public ResponseEntity<Object> eliminarCliente(@PathVariable Long dni) throws Excepcion {
 
@@ -64,7 +77,13 @@ public class ClienteRestController {
 		serviceCliente.elminarCliente(dni);
 		return ResponseEntity.ok().build();
 	}
-	
+	/**
+	 * metodo post para agregar un cliente en la bd
+	 * @param clienteRequest
+	 * @param result
+	 * @return
+	 * @throws Exception
+	 */
 	@PostMapping
 	public ResponseEntity<Object> insertarCliente (@Valid @RequestBody ClienteRequest clienteRequest,
 			BindingResult result) throws Exception {
@@ -77,6 +96,13 @@ public class ClienteRestController {
 		return new ResponseEntity<Object>(buildResponse(newCliente), HttpStatus.OK);
 	}
 
+	/**
+	 * Metodo PUT para actualizar datos de un cliente
+	 * @param clienteRequest
+	 * @param dni No se permite modificar el dni de la persona
+	 * @return
+	 * @throws Exception
+	 */
 	@PutMapping("/{dni}")
 	public ResponseEntity<Object> actualizarCliente(@RequestBody ClienteRequest clienteRequest, @PathVariable long dni) throws Exception {
 		Optional<Cliente> clienteRta = serviceCliente.obtenerClientebyDNI(dni);
@@ -91,7 +117,12 @@ public class ClienteRestController {
 
 		}
 	}
-	
+	/**
+	 * Se utiliza para implementar HATEOAS
+	 * @param pojo
+	 * @return
+	 * @throws Excepcion
+	 */
 	private ClienteDTO buildResponse(Cliente pojo) throws Excepcion {
 		try {
 			ClienteDTO dto = new ClienteDTO(pojo);
@@ -101,6 +132,25 @@ public class ClienteRestController {
 										.withSelfRel();
 			dto.add(selfLink);
 			return dto;
+		} catch (Exception e) {
+			throw new Excepcion(e.getMessage(),500);
+		}
+	}
+	private List<ClienteDTO> buildResponseList(List<Cliente> pojo) throws Excepcion {
+		try {
+			List<ClienteDTO> listCliDTO = new ArrayList<ClienteDTO>();
+			for (Cliente cliente : pojo) {
+				ClienteDTO dto = new ClienteDTO(cliente);
+				 //Self link
+				Link selfLink = WebMvcLinkBuilder.linkTo(ClienteRestController.class)
+											.slash(cliente.getDni())                
+											.withSelfRel();
+				
+				listCliDTO.add(dto.add(selfLink));
+				
+			}
+			
+			return listCliDTO;
 		} catch (Exception e) {
 			throw new Excepcion(e.getMessage(),500);
 		}

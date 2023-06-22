@@ -7,33 +7,31 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.daos.Entity.Cliente;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.annotation.Nonnull;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 
 public class ClienteRequest {
 	
-	@Nonnull
-	@Min(7000000)
+	@NotNull
+	@Min(4000000)
 	private Long dni;
-	@Nonnull
-	@Size(min = 1,max = 100, message = "Debe completar el nombre")
+	@NotNull
+	@NotBlank (message = "Debe completar el nombre")
 	private String nombre;
-	@Nonnull
-	@Size(min = 1,max = 100, message = "Debe completar el apellido")
+	@NotNull
+	@NotBlank (message = "Debe completar el apellido")
 	private String apellido;
-	@Nonnull
+	@NotNull (message = "Debe completar la fecha de nacimiento")
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate fecha_nac;
 	private String domicilio;
-	@Nonnull 
+	@NotNull 
 	@Email(message = "El e-mail ingresado no es valido")
 	private String email;
-	
 	private Long pasaporte;
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -89,8 +87,7 @@ public class ClienteRequest {
 	}
 		
 	
-	public Cliente toEntidad() {
-		
+	public Cliente toEntidad() {		
 		Cliente newCliente = new Cliente();
 		newCliente.setDni(this.dni);
 		newCliente.setApellido(this.apellido);

@@ -10,7 +10,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Cliente {
@@ -19,27 +19,29 @@ public class Cliente {
 	@Nonnull
 	private Long dni;
 	@Nonnull
-	@Size(min = 1,max = 100, message = "Debe completar el nombre")
+	@NotNull
 	private String nombre;
 	@Nonnull
-	@Size(min = 1,max = 100, message = "Debe completar el apellido")
+	@NotNull	
 	private String apellido;
 	@Nonnull
+	@NotNull
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate fecha_nac;
 	private String domicilio;
 	@Nonnull
-	@Email(message = "El e-mail ingresado no es valido")
-	private String email;
-	
-	private Long pasaporte;
-	
+	@NotNull
+	@Email
+	private String email;	
+	private Long pasaporte;	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate fecha_pas;
-	
-	//GET Y SET
+	/**
+	 * GETTERS/SETTERS
+	 * @return
+	 */
 	public Long getDni() {
 		return dni;
 	}
